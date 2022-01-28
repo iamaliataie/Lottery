@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lottery Game</title>
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .wrapper{
+            position: relative;
+            height: 100vh;
+            background: rgb(2,0,36);
+            background: radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 50%, rgba(0,212,255,1) 100%);
+            overflow: hidden;
+        }
+        .box{
+            position: absolute;
+            width: 500px;
+            height: 400px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+        textarea{
+            display: block;
+            background-color: rgba(0, 0, 0, 0.358);
+            border-radius: 10px;
+            width: 100%;
+            border: none;
+            outline: none;
+            resize: none;
+            padding: 10px;
+            font-size: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: white;
+        }
+        button{
+            margin: 10px;
+            width: 100px;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+        }
+        .lets-go{
+            background-color: green;
+            color: white;
+            cursor: pointer;
+        }
+        .clear{
+            background-color: red;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover{
+            background-color: yellow;
+            color: black;
+        }
+        .timer{
+            width: 100%;
+            font-size: 25px;
+            border: 1px solid ;
+            border-radius: 10px;
+            color: white;
+        }
+        .list-box{
+            width: 100%;
+            margin-top: 10px;
+            border-radius: 10px;
+            max-height: 100px;
+            overflow: scroll;
+        }
+        .list{
+            width: 100%;
+            border: 1px solid inset;
+            border-radius: 5px;
+        }
+        .list tr{
+            background-color: rgb(225, 224, 224);
+        }
+        .list tr:hover{
+            background-color:rgb(255, 255, 255);
+        }
+        .answer{
+            margin: 5px;
+        }
+        .game-type{
+            margin-top: 10px;
+            color: white;
+        }
+        .loop{
+            display: none;
+        }
+        input[value=many]:checked ~ .loop{
+            display: block;
+            margin: 0 auto;
+            border: none;
+            outline: none;
+            padding: 5px;
+        }
+        @media screen and (max-width:576px){
+            .box{
+                width: 90%;
+            }
+            .timer{
+                font-size: 20px;
+            }
+            .answer{
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="box">
+            <textarea name="" id="names" cols="30" rows="10" placeholder="please enter names"></textarea>
+            <div class="game-type">
+                One Winner
+                <input type="radio" name="game" class="game" value="one" checked>
+                Many Winners
+                <input type="radio" name="game" class="game" value="many">
+                <input type="number" id="loop" class="loop" placeholder="loops">
+            </div>
+            <div class="buttons">
+                <button id="submit" class="lets-go">Let's Go</button>
+                <button id="clear" class="clear">Clear</button>
+            </div>
+            <div id="timer" class="timer">
+                3
+            </div>
+            <div class="list-box">
+                <table class="list" id="list"></table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    const button = document.getElementById("submit");
+    const clear = document.getElementById("clear");
+    const timeDiv = document.getElementById("timer");
+    const names = document.getElementById("names");
+    const list = document.getElementById("list");
+    let time = 3;
+
+    function myNames(){
+        let persons = {};
+        let numbers = [];
+        let game = document.querySelectorAll(".game");
+        const Names = names.value.toString();
+        const bodies = Names.split("\n");
+
+        for (let index = 0; index < bodies.length; index++) {
+            while (true) {
+                let isValid = false;
+                const randomNumber = Math.floor(Math.random() * bodies.length) + 1;
+                for (const num of numbers) {
+                    if (num == randomNumber) {
+                        isValid = true;
+                    }
+                }
+                if (!isValid) {
+                    numbers.push(randomNumber);
+                    persons[randomNumber] = bodies[index];
+                    break;
+                }
+            }
+        }
+        if (game[0].checked) {
+            const randomNumber = Math.floor(Math.random() * bodies.length) + 1;
+            timeDiv.textContent = (randomNumber) + " : " + persons[randomNumber];
+            for (let item in persons) {
+                const tr = document.createElement("tr");
+                const td = document.createElement("td");
+                const td1 = document.createElement("td");
+                td.width = "20%";
+                td.textContent = item;
+                td1.textContent = persons[item];
+                tr.appendChild(td);
+                tr.appendChild(td1);
+                list.appendChild(tr)
+            }
+        }
+        if (game[1].checked) {
+            let loops = document.getElementById("loop").value;
+            let max = 0;
+            let most = {};
+            let winners = [];
+            for (let index = 0; index < loops; index++) {
+                let exist = false;
+                const randomNumber = Math.floor(Math.random() * bodies.length) + 1;
+                for (const key in most) {
+                        if (key == randomNumber) {
+                            exist = true;
+                        }
+                }
+                if (exist) {
+                    most[randomNumber] = most[randomNumber] + 1;
+                }
+                else{
+                    most[randomNumber] = 1;
+                }
+                
+                const tr = document.createElement("tr");
+                const td = document.createElement("td");
+                const td1 = document.createElement("td");
+                td.width = "20%";
+                td.textContent = randomNumber;
+                td1.textContent = persons[randomNumber];
+                tr.appendChild(td);
+                tr.appendChild(td1);
+                list.appendChild(tr);
+            }
+            for (const key in most) {
+                if (most[key] > max) {
+                    max = most[key];
+                }
+            }
+            for (const key in most) {
+                if (most[key] == max) {
+                    winners.push(persons[key])
+                }
+            }
+            timeDiv.textContent = "";
+            for (const item of winners) {
+                let p = document.createElement("p");
+                p.classList = "answer";
+                p.textContent = `${item} - ${max} times`;
+                timeDiv.appendChild(p);
+            }
+        }
+    }
+    function timer(time){
+        timeDiv.textContent = time;
+        const interval = setInterval(()=>{
+            time -= 1;
+            timeDiv.textContent = time;
+            if (time == 0) {
+                clearInterval(interval);
+                myNames();
+            }
+        },1000);
+    }
+    button.addEventListener("click", function(){
+        list.textContent = ""
+        if (names.value != "") {
+            timer(time);
+        }
+        else{
+            alert("No names entered.");
+        }
+    });
+    clear.addEventListener("click", function(){
+        names.value = "";
+        list.innerText = "";
+        time = 3;
+        timeDiv.textContent = time;
+        console.clear();
+    });
+    
+</script>
