@@ -12,26 +12,28 @@
             font-family: Arial, Helvetica, sans-serif;
         }
         .wrapper{
-            position: relative;
             height: 100vh;
             background: rgb(2,0,36);
             background: radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 50%, rgba(0,212,255,1) 100%);
-            overflow: hidden;
+            overflow: scroll;
+        }
+        .title{
+            text-align: center;
+            color: rgb(228, 218, 228);
+            text-transform: uppercase;
+            letter-spacing: 10px;
+            margin-top:60px;
         }
         .box{
-            position: absolute;
             width: 500px;
-            height: 400px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            margin: 10px auto;
             border-radius: 10px;
             text-align: center;
             justify-content: center;
             align-items: center;
             display: flex;
             flex-direction: column;
-            padding: 10px;
+            padding: 10px 10px 40px 10px;
         }
         textarea{
             display: block;
@@ -79,8 +81,6 @@
             width: 100%;
             margin-top: 10px;
             border-radius: 10px;
-            max-height: 100px;
-            overflow: scroll;
         }
         .list{
             width: 100%;
@@ -105,25 +105,41 @@
         }
         input[value=many]:checked ~ .loop{
             display: block;
-            margin: 0 auto;
+            margin: 10px auto;
+            padding: 5px;
             border: none;
             outline: none;
-            padding: 5px;
+            border-radius: 5px;
         }
         .footer{
-            display: flex;
             width: 100%;
-            background-color: aliceblue;
+            text-align: center;
             padding: 10px;
-            position: absolute;
+            background-color: aliceblue;
+            position:fixed;
             bottom: 0;
-            left: 0;
+            left: 50%;
+            transform: translateX(-50%);
+
             justify-content: center;
         }
         .footer a{
             color: black;
         }
+        .message{
+            width: fit-content;
+            background-color: rgb(159, 7, 7);
+            color: white;
+            font-weight: 200;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            padding: 5px 10px;
+            display: none;
+        }
         @media screen and (max-width:576px){
+            .title{
+                letter-spacing: 5px;
+            }
             .box{
                 width: 90%;
             }
@@ -138,14 +154,18 @@
 </head>
 <body>
     <div class="wrapper">
+        <h2 class="title">Lottery Game</h2>
         <div class="box">
-            <textarea name="" id="names" cols="30" rows="10" placeholder="please enter names"></textarea>
+            <div class="message" id="message">
+                Textbox cannot be empty.
+            </div>
+            <textarea name="" id="names" cols="30" rows="8" placeholder="Enter names"></textarea>
             <div class="game-type">
                 One Winner
                 <input type="radio" name="game" class="game" value="one" checked>
                 Many Winners
                 <input type="radio" name="game" class="game" value="many">
-                <input type="number" id="loop" class="loop" placeholder="loops">
+                <input type="number" id="loop" class="loop" placeholder="loops" value="5">
             </div>
             <div class="buttons">
                 <button id="submit" class="lets-go">Let's Go</button>
@@ -171,6 +191,7 @@
     const timeDiv = document.getElementById("timer");
     const names = document.getElementById("names");
     const list = document.getElementById("list");
+    const message = document.getElementById("message");
     let time = 3;
 
     function myNames(){
@@ -277,7 +298,10 @@
             timer(time);
         }
         else{
-            alert("No names entered.");
+            message.style.display = "block";
+            setTimeout(() => {
+                message.style.display = "none";
+            }, 2000);
         }
     });
     clear.addEventListener("click", function(){
